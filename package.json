@@ -1,7 +1,19 @@
 {
   "name": "hex-cli",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.4.0",
+  "homepage": "https://github.com/ken888686/hex-cli#readme",
+  "bugs": {
+    "url": "https://github.com/ken888686/hex-cli/issues",
+    "email": "ken888686@gmail.com"
+  },
+  "author": {
+    "name": "Aaron Tu",
+    "email": "ken888686@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ken888686/hex-cli.git"
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -33,5 +45,6 @@
     "eslint-plugin-vue": "^7.0.0",
     "node-sass": "^4.12.0",
     "sass-loader": "^8.0.2"
-  }
+  },
+  "license": "MIT"
 }
