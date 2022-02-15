@@ -1,26 +1,26 @@
 import { createStore } from 'vuex';
-import { useCookies } from 'vue3-cookies';
-
-const { cookies } = useCookies();
+import Cookies from 'js-cookie';
+import persistedState from 'vuex-persistedstate';
 
 export default createStore({
+  plugins: [persistedState({ storage: window.localStorage })],
   state: {
-    isLogin: cookies.get('isLogin'),
-    token: cookies.get('token'),
+    isLogin: Cookies.get('isLogin'),
+    token: Cookies.get('token'),
   },
   mutations: {
     login(state) {
       state.isLogin = true;
-      cookies.set('isLogin', true);
+      Cookies.set('isLogin', true);
     },
     logout(state) {
       state.isLogin = false;
-      cookies.set('isLogin', false);
-      cookies.set('token', '');
+      Cookies.set('isLogin', false);
+      Cookies.set('token', '');
     },
     updateToken(state, token) {
       state.token = token;
-      cookies.set('token', token);
+      Cookies.set('token', token);
     },
   },
   actions: {
