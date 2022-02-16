@@ -279,7 +279,9 @@ export default {
       this.product = this.propProduct;
     },
   },
-  mounted() {},
+  mounted() {
+    this.title = this.propIsNew ? '新增產品' : '編輯產品';
+  },
   methods: {
     addProduct() {
       this.isLoading = true;
