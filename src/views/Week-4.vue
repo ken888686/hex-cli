@@ -191,7 +191,6 @@ export default {
           const { products, pagination } = res.data;
           this.products = products;
           this.pagination = pagination;
-          console.log(pagination);
           this.isLoading = false;
         })
         .catch((err) => {
