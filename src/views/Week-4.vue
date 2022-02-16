@@ -77,12 +77,16 @@
       @get-products="getProducts"
       @show-result-modal="showProductResultModal"
     />
-    <ProductDeleteModalVue
+    <ProductDeleteModal
       :prop-product="product"
       @get-products="getProducts"
       @show-result-modal="showProductResultModal"
     />
-    <ProductResultModalVue :prop-result="result" />
+    <ProductResultModal :prop-result="result" />
+    <Pagination
+      :prop-pagination="pagination"
+      @set-current-page="getProducts"
+    />
   </div>
 </template>
 
@@ -90,27 +94,28 @@
 import { Modal } from 'bootstrap';
 import { auth, admin } from '@/services';
 import ProductModal from '@/components/ProductModal.vue';
-import ProductDeleteModalVue from '@/components/ProductDeleteModal.vue';
-import ProductResultModalVue from '@/components/ProductResultModal.vue';
+import ProductDeleteModal from '@/components/ProductDeleteModal.vue';
+import ProductResultModal from '@/components/ProductResultModal.vue';
+import Pagination from '@/components/Pagination.vue';
 
 export default {
   components: {
     ProductModal,
-    ProductDeleteModalVue,
-    ProductResultModalVue,
+    ProductDeleteModal,
+    ProductResultModal,
+    Pagination,
   },
   data() {
     return {
-      modalTitle: '',
       product: {},
       products: [],
       isLoading: true,
       productModal: null,
       productDeleteModal: null,
       productResultModal: null,
-      selectedProductId: '',
       isNew: true,
       result: {},
+      pagination: {},
     };
   },
   watch: {
@@ -183,10 +188,10 @@ export default {
       this.result = { message, success };
       this.productResultModal.show();
     },
-    getProducts() {
+    getProducts(page = 1) {
       this.isLoading = true;
       admin
-        .getProducts()
+        .getProducts(page)
         .then((res) => {
           const { products, pagination } = res.data;
           this.products = products;
