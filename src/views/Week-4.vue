@@ -4,7 +4,7 @@
       <button
         class="btn btn-primary"
         :disabled="isLoading"
-        @click="setProductId('', 'add')"
+        @click="showAddProductModal"
       >
         建立新的產品
       </button>
@@ -55,7 +55,7 @@
               <button
                 type="button"
                 class="btn btn-outline-primary btn-sm"
-                @click="setProductId(item.id, 'edit')"
+                @click="showUpdateProductModal(item.id)"
               >
                 編輯
               </button>
@@ -71,23 +71,48 @@
         </tr>
       </tbody>
     </table>
+    <ProductModal
+      :prop-is-new="isNew"
+      :prop-product="product"
+    />
   </div>
 </template>
 
 <script>
-// import { Modal } from 'bootstrap';
+import { Modal } from 'bootstrap';
 import { auth, admin } from '@/services';
+import ProductModal from '@/components/ProductModal.vue';
 
 export default {
+  components: {
+    ProductModal,
+  },
   data() {
     return {
+      modalTitle: '',
+      product: {},
       products: [],
       isLoading: true,
+      productModal: null,
+      selectedProductId: '',
+      isNew: true,
     };
+  },
+  watch: {
+    // selectedProductId() {
+    //   if (this.selectedProductId === '') {
+    //     this.product = {};
+    //     return;
+    //   }
+    //   this.product = this.products.find(
+    //     (product) => product.id === this.selectedProductId,
+    //   );
+    // },
   },
   mounted() {
     if (!this.$store.state.isLogin) {
       this.$router.push('/login');
+      return;
     }
 
     auth
@@ -99,81 +124,43 @@ export default {
         }
       })
       .catch((err) => {
-        const { data } = err.response;
-        this.message = data.message;
-        this.success = data.success;
+        const { message, success } = err.response.data;
+        this.message = message;
+        this.success = success;
         this.$store.commit('logout');
         this.$router.push('/login');
       });
+
+    this.productModal = new Modal(document.getElementById('productModal'), {
+      keyboard: false,
+      backdrop: 'static',
+    });
   },
   methods: {
-    setProductId(id, action) {
-      this.selectedProductId = id;
-      this.action = action;
-      switch (action) {
-        case 'add':
-        case 'edit':
-          this.productModal.show();
-          break;
-        case 'del':
-          this.delProductModal.show();
-          break;
-        default:
-      }
+    showAddProductModal() {
+      this.product = {};
+      this.isNew = true;
+      this.productModal.show();
+    },
+    showUpdateProductModal(productId) {
+      this.product = this.products.find((product) => product.id === productId);
+      this.isNew = false;
+      this.productModal.show();
     },
     getProducts() {
       this.isLoading = true;
       admin
         .getProducts()
         .then((res) => {
-          const { data } = res;
-          this.products = data.products;
-          this.pagination = data.pagination;
+          const { products, pagination } = res.data;
+          this.products = products;
+          this.pagination = pagination;
           this.isLoading = false;
         })
         .catch((err) => {
-          const { data } = err.response;
-          this.message = data.message;
-          this.success = data.success;
-          this.$store.commit('logout');
-          this.$router.push('/login');
-        });
-    },
-    addProduct() {
-      this.isLoading = true;
-      admin
-        .addProduct(this.product)
-        .then((res) => {
-          const { data } = res;
-          this.message = data.message;
-          this.success = data.success;
-          this.getProducts();
-        })
-        .catch((err) => {
-          const { data } = err.response;
-          this.message = data.message;
-          this.success = data.success;
-          this.$store.commit('logout');
-          this.$router.push('/login');
-          this.getProducts();
-        });
-    },
-    updateProduct() {
-      this.isLoading = true;
-      admin
-        .updateProduct(this.selectedProductId, this.product)
-        .then((res) => {
-          const { data } = res;
-          this.products = data.products;
-          this.pagination = data.pagination;
-          this.message = data.message;
-          this.success = data.success;
-          this.getProducts();
-        })
-        .catch((err) => {
-          const { data } = err.response;
-          this.message = data.message;
-          this.success = data.success;
+          const { message, success } = err.response.data;
+          this.message = message;
+          this.success = success;
           this.$store.commit('logout');
           this.$router.push('/login');
         });
@@ -183,17 +170,19 @@ export default {
       admin
         .deleteProduct(this.selectedProductId)
         .then((res) => {
-          const { data } = res;
-          this.products = data.products;
-          this.pagination = data.pagination;
-          this.message = data.message;
-          this.success = data.success;
+          const {
+            products, pagination, message, success,
+          } = res.data;
+          this.products = products;
+          this.pagination = pagination;
+          this.message = message;
+          this.success = success;
           this.getProducts();
         })
         .catch((err) => {
-          const { data } = err.response;
-          this.message = data.message;
-          this.success = data.success;
+          const { message, success } = err.response.data;
+          this.message = message;
+          this.success = success;
           this.$store.commit('logout');
           this.$router.push('/login');
         });
