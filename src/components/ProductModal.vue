@@ -264,25 +264,30 @@ export default {
       default: () => ({}),
     },
   },
-  emits: ['get-products'],
+  emits: ['get-products', 'show-result-modal'],
   data() {
     return {
-      title: '',
-      product: {},
+      title: '新增產品',
+      product: {
+        imagesUrl: [],
+      },
       isNew: true,
     };
   },
   watch: {
     propIsNew() {
       this.title = this.propIsNew ? '新增產品' : '編輯產品';
+      this.isNew = this.propIsNew;
     },
     propProduct() {
       this.product = this.propProduct;
     },
+    'product.imageUrl': {
+      handler() {},
+      deep: true,
+    },
   },
-  mounted() {
-    this.title = this.propIsNew ? '新增產品' : '編輯產品';
-  },
+  mounted() {},
   methods: {
     addProduct() {
       admin
@@ -291,6 +296,10 @@ export default {
           const { message, success } = res.data;
           this.message = message;
           this.success = success;
+          this.$emit('show-result-modal', {
+            message,
+            success,
+          });
           this.$emit('get-products');
         })
         .catch((err) => {
@@ -303,15 +312,15 @@ export default {
     },
     updateProduct() {
       admin
-        .updateProduct(this.selectedProductId, this.product)
+        .updateProduct(this.product)
         .then((res) => {
-          const {
-            products, pagination, message, success,
-          } = res.data;
-          this.products = products;
-          this.pagination = pagination;
+          const { message, success } = res.data;
           this.message = message;
           this.success = success;
+          this.$emit('show-result-modal', {
+            message,
+            success,
+          });
           this.$emit('get-products');
         })
         .catch((err) => {

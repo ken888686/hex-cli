@@ -58,7 +58,7 @@ export default {
       default: () => ({}),
     },
   },
-  emits: ['get-products'],
+  emits: ['get-products', 'show-result-modal'],
   data() {
     return {
       product: {},
@@ -81,6 +81,10 @@ export default {
           this.pagination = pagination;
           this.message = message;
           this.success = success;
+          this.$emit('show-result-modal', {
+            message,
+            success,
+          });
           this.$emit('get-products');
         })
         .catch((err) => {

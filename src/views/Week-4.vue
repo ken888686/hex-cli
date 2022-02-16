@@ -75,11 +75,14 @@
       :prop-is-new="isNew"
       :prop-product="product"
       @get-products="getProducts"
+      @show-result-modal="showProductResultModal"
     />
     <ProductDeleteModalVue
       :prop-product="product"
       @get-products="getProducts"
+      @show-result-modal="showProductResultModal"
     />
+    <ProductResultModalVue :prop-result="result" />
   </div>
 </template>
 
@@ -88,11 +91,13 @@ import { Modal } from 'bootstrap';
 import { auth, admin } from '@/services';
 import ProductModal from '@/components/ProductModal.vue';
 import ProductDeleteModalVue from '@/components/ProductDeleteModal.vue';
+import ProductResultModalVue from '@/components/ProductResultModal.vue';
 
 export default {
   components: {
     ProductModal,
     ProductDeleteModalVue,
+    ProductResultModalVue,
   },
   data() {
     return {
@@ -102,20 +107,18 @@ export default {
       isLoading: true,
       productModal: null,
       productDeleteModal: null,
+      productResultModal: null,
       selectedProductId: '',
       isNew: true,
+      result: {},
     };
   },
   watch: {
-    // selectedProductId() {
-    //   if (this.selectedProductId === '') {
-    //     this.product = {};
-    //     return;
-    //   }
-    //   this.product = this.products.find(
-    //     (product) => product.id === this.selectedProductId,
-    //   );
-    // },
+    product() {
+      if (this.product.imagesUrl === undefined) {
+        this.product.imagesUrl = [];
+      }
+    },
   },
   mounted() {
     if (!this.$store.state.isLogin) {
@@ -151,6 +154,14 @@ export default {
         backdrop: 'static',
       },
     );
+
+    this.productResultModal = new Modal(
+      document.getElementById('productResultModal'),
+      {
+        keyboard: false,
+        backdrop: 'static',
+      },
+    );
   },
   methods: {
     showProductAddModal() {
@@ -168,6 +179,10 @@ export default {
       this.isNew = false;
       this.productDeleteModal.show();
     },
+    showProductResultModal({ message, success }) {
+      this.result = { message, success };
+      this.productResultModal.show();
+    },
     getProducts() {
       this.isLoading = true;
       admin
@@ -176,6 +191,7 @@ export default {
           const { products, pagination } = res.data;
           this.products = products;
           this.pagination = pagination;
+          console.log(pagination);
           this.isLoading = false;
         })
         .catch((err) => {

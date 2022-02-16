@@ -141,14 +141,17 @@ const admin = {
 
   /**
    * 編輯產品
-   * @param {string} id 產品id
-   * @param {object}} data 產品資訊
+   * @param {object} data 產品資訊
    * @returns Promise
    */
-  updateProduct(id, data) {
+  updateProduct(data) {
     return new Promise((resolve, reject) => {
       axios
-        .put(`${url}/v2/api/${apiPath}/admin/product/${id}`, { data }, config)
+        .put(
+          `${url}/v2/api/${apiPath}/admin/product/${data.id}`,
+          { data },
+          config,
+        )
         .then((res) => {
           resolve(res);
         })
