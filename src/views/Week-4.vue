@@ -83,10 +83,12 @@
       @show-result-modal="showProductResultModal"
     />
     <ProductResultModal :prop-result="result" />
-    <Pagination
-      :prop-pagination="pagination"
-      @set-current-page="getProducts"
-    />
+    <div class="text-center">
+      <Pagination
+        :prop-pagination="pagination"
+        @set-current-page="getProducts"
+      />
+    </div>
   </div>
 </template>
 

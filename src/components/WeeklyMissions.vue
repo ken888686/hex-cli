@@ -23,10 +23,21 @@
       第三週作業
     </router-link> -->
     <router-link
-      to="/week-4"
+      v-for="(item, index) in homework"
+      :key="index"
+      :to="`/week-${item}`"
       class="btn btn-outline-primary"
     >
-      第四週作業
+      第 {{ item }} 週作業
     </router-link>
   </div>
 </template>
+<script>
+export default {
+  data() {
+    return {
+      homework: [4, 5],
+    };
+  },
+};
+</script>

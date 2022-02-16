@@ -166,10 +166,50 @@ const admin = {
  * 客戶購物
  */
 const customer = {
-  getProducts() {
+  /**
+   * 取得產品
+   * @param {Number} page 頁數
+   * @param {String} category 分類
+   * @returns Promise
+   */
+  getProducts(page = 1, category = '') {
     return new Promise((resolve, reject) => {
       axios
-        .get(`${url}/v2/api/${apiPath}/products`)
+        .get(
+          `${url}/v2/api/${apiPath}/products?page=${page}&category=${category}`,
+        )
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  },
+  /**
+   * 取得購物車
+   * @returns Promise
+   */
+  getCart() {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`${url}/v2/api/${apiPath}/cart`)
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  },
+  /**
+   * 清除購物車
+   * @returns Promise
+   */
+  removeCart() {
+    return new Promise((resolve, reject) => {
+      axios
+        .delete(`${url}/v2/api/${apiPath}/carts`)
         .then((res) => {
           resolve(res);
         })

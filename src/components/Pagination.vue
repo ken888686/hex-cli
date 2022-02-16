@@ -1,5 +1,8 @@
 <template>
-  <nav aria-label="Page navigation">
+  <nav
+    aria-label="Page navigation"
+    class="d-inline-block"
+  >
     <ul class="pagination">
       <li
         class="page-item"
