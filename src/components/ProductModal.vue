@@ -264,32 +264,43 @@ export default {
       default: () => ({}),
     },
   },
+  emits: ['get-products', 'show-result-modal'],
   data() {
     return {
-      title: '',
-      product: {},
+      title: '新增產品',
+      product: {
+        imagesUrl: [],
+      },
       isNew: true,
     };
   },
   watch: {
     propIsNew() {
       this.title = this.propIsNew ? '新增產品' : '編輯產品';
+      this.isNew = this.propIsNew;
     },
     propProduct() {
       this.product = this.propProduct;
+    },
+    'product.imageUrl': {
+      handler() {},
+      deep: true,
     },
   },
   mounted() {},
   methods: {
     addProduct() {
-      this.isLoading = true;
       admin
         .addProduct(this.product)
         .then((res) => {
           const { message, success } = res.data;
           this.message = message;
           this.success = success;
-          this.getProducts();
+          this.$emit('show-result-modal', {
+            message,
+            success,
+          });
+          this.$emit('get-products');
         })
         .catch((err) => {
           const { message, success } = err.response.data;
@@ -297,22 +308,20 @@ export default {
           this.success = success;
           this.$store.commit('logout');
           this.$router.push('/login');
-          this.getProducts();
         });
     },
     updateProduct() {
-      this.isLoading = true;
       admin
-        .updateProduct(this.selectedProductId, this.product)
+        .updateProduct(this.product)
         .then((res) => {
-          const {
-            products, pagination, message, success,
-          } = res.data;
-          this.products = products;
-          this.pagination = pagination;
+          const { message, success } = res.data;
           this.message = message;
           this.success = success;
-          this.getProducts();
+          this.$emit('show-result-modal', {
+            message,
+            success,
+          });
+          this.$emit('get-products');
         })
         .catch((err) => {
           const { message, success } = err.response.data;

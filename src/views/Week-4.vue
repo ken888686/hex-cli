@@ -4,7 +4,7 @@
       <button
         class="btn btn-primary"
         :disabled="isLoading"
-        @click="showAddProductModal"
+        @click="showProductAddModal"
       >
         建立新的產品
       </button>
@@ -55,14 +55,14 @@
               <button
                 type="button"
                 class="btn btn-outline-primary btn-sm"
-                @click="showUpdateProductModal(item.id)"
+                @click="showProductUpdateModal(item.id)"
               >
                 編輯
               </button>
               <button
                 type="button"
                 class="btn btn-outline-danger btn-sm"
-                @click="setProductId(item.id, 'del')"
+                @click="showProductDeleteModal(item.id)"
               >
                 刪除
               </button>
@@ -74,7 +74,15 @@
     <ProductModal
       :prop-is-new="isNew"
       :prop-product="product"
+      @get-products="getProducts"
+      @show-result-modal="showProductResultModal"
     />
+    <ProductDeleteModalVue
+      :prop-product="product"
+      @get-products="getProducts"
+      @show-result-modal="showProductResultModal"
+    />
+    <ProductResultModalVue :prop-result="result" />
   </div>
 </template>
 
@@ -82,10 +90,14 @@
 import { Modal } from 'bootstrap';
 import { auth, admin } from '@/services';
 import ProductModal from '@/components/ProductModal.vue';
+import ProductDeleteModalVue from '@/components/ProductDeleteModal.vue';
+import ProductResultModalVue from '@/components/ProductResultModal.vue';
 
 export default {
   components: {
     ProductModal,
+    ProductDeleteModalVue,
+    ProductResultModalVue,
   },
   data() {
     return {
@@ -94,20 +106,19 @@ export default {
       products: [],
       isLoading: true,
       productModal: null,
+      productDeleteModal: null,
+      productResultModal: null,
       selectedProductId: '',
       isNew: true,
+      result: {},
     };
   },
   watch: {
-    // selectedProductId() {
-    //   if (this.selectedProductId === '') {
-    //     this.product = {};
-    //     return;
-    //   }
-    //   this.product = this.products.find(
-    //     (product) => product.id === this.selectedProductId,
-    //   );
-    // },
+    product() {
+      if (this.product.imagesUrl === undefined) {
+        this.product.imagesUrl = [];
+      }
+    },
   },
   mounted() {
     if (!this.$store.state.isLogin) {
@@ -135,17 +146,42 @@ export default {
       keyboard: false,
       backdrop: 'static',
     });
+
+    this.productDeleteModal = new Modal(
+      document.getElementById('productDeleteModal'),
+      {
+        keyboard: false,
+        backdrop: 'static',
+      },
+    );
+
+    this.productResultModal = new Modal(
+      document.getElementById('productResultModal'),
+      {
+        keyboard: false,
+        backdrop: 'static',
+      },
+    );
   },
   methods: {
-    showAddProductModal() {
+    showProductAddModal() {
       this.product = {};
       this.isNew = true;
       this.productModal.show();
     },
-    showUpdateProductModal(productId) {
+    showProductUpdateModal(productId) {
       this.product = this.products.find((product) => product.id === productId);
       this.isNew = false;
       this.productModal.show();
+    },
+    showProductDeleteModal(productId) {
+      this.product = this.products.find((product) => product.id === productId);
+      this.isNew = false;
+      this.productDeleteModal.show();
+    },
+    showProductResultModal({ message, success }) {
+      this.result = { message, success };
+      this.productResultModal.show();
     },
     getProducts() {
       this.isLoading = true;
@@ -155,29 +191,8 @@ export default {
           const { products, pagination } = res.data;
           this.products = products;
           this.pagination = pagination;
+          console.log(pagination);
           this.isLoading = false;
-        })
-        .catch((err) => {
-          const { message, success } = err.response.data;
-          this.message = message;
-          this.success = success;
-          this.$store.commit('logout');
-          this.$router.push('/login');
-        });
-    },
-    deleteProduct() {
-      this.isLoading = true;
-      admin
-        .deleteProduct(this.selectedProductId)
-        .then((res) => {
-          const {
-            products, pagination, message, success,
-          } = res.data;
-          this.products = products;
-          this.pagination = pagination;
-          this.message = message;
-          this.success = success;
-          this.getProducts();
         })
         .catch((err) => {
           const { message, success } = err.response.data;
