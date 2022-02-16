@@ -264,6 +264,7 @@ export default {
       default: () => ({}),
     },
   },
+  emits: ['get-products'],
   data() {
     return {
       title: '',
@@ -284,14 +285,13 @@ export default {
   },
   methods: {
     addProduct() {
-      this.isLoading = true;
       admin
         .addProduct(this.product)
         .then((res) => {
           const { message, success } = res.data;
           this.message = message;
           this.success = success;
-          this.getProducts();
+          this.$emit('get-products');
         })
         .catch((err) => {
           const { message, success } = err.response.data;
@@ -299,11 +299,9 @@ export default {
           this.success = success;
           this.$store.commit('logout');
           this.$router.push('/login');
-          this.getProducts();
         });
     },
     updateProduct() {
-      this.isLoading = true;
       admin
         .updateProduct(this.selectedProductId, this.product)
         .then((res) => {
@@ -314,7 +312,7 @@ export default {
           this.pagination = pagination;
           this.message = message;
           this.success = success;
-          this.getProducts();
+          this.$emit('get-products');
         })
         .catch((err) => {
           const { message, success } = err.response.data;
