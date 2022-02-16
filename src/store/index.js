@@ -8,6 +8,7 @@ export default createStore({
     isLogin: Cookies.get('isLogin'),
     token: Cookies.get('token'),
   },
+  getters: {},
   mutations: {
     login(state) {
       state.isLogin = true;
