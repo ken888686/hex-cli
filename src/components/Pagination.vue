@@ -59,7 +59,6 @@ export default {
   },
   watch: {
     propPagination() {
-      console.log(this.propPagination);
       this.pagination = this.propPagination;
     },
   },
