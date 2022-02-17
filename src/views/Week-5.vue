@@ -67,7 +67,10 @@
           </tr>
         </tbody>
       </table>
-      <div class="text-center">
+      <div
+        class="text-center"
+        :class="{ 'd-none': pagination.total_pages < 1 }"
+      >
         <Pagination
           :prop-pagination="pagination"
           @set-current-page="getProducts"
