@@ -57,13 +57,14 @@
                   <button
                     type="button"
                     class="btn btn-primary"
+                    :disabled="done"
+                    @click="addProduct(product.id, quantity)"
                   >
                     加入購物車
                   </button>
                 </div>
               </div>
             </div>
-            <!-- col-sm-6 end -->
           </div>
         </div>
       </div>
@@ -78,18 +79,27 @@ export default {
       default: () => ({}),
     },
   },
+  emits: ['add-product'],
   data() {
     return {
       product: {},
       quantity: 1,
+      done: false,
     };
   },
   watch: {
     propProduct() {
       this.product = this.propProduct;
       this.quantity = 1;
+      this.done = false;
     },
   },
   mounted() {},
+  methods: {
+    addProduct(productId, quantity) {
+      this.done = true;
+      this.$emit('add-product', { productId, quantity });
+    },
+  },
 };
 </script>
