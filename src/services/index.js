@@ -248,12 +248,17 @@ const customer = {
   },
   /**
    * 清除購物車
+   * @param {String} productId 產品id
    * @returns Promise
    */
-  removeCart() {
+  removeCart(productId = '') {
+    const reqUrl = productId === ''
+      ? `${url}/v2/api/${apiPath}/carts`
+      : `${url}/v2/api/${apiPath}/cart/${productId}`;
+
     return new Promise((resolve, reject) => {
       axios
-        .delete(`${url}/v2/api/${apiPath}/carts`)
+        .delete(reqUrl)
         .then((res) => {
           resolve(res);
         })

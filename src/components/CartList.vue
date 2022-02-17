@@ -22,8 +22,13 @@
             <button
               type="button"
               class="btn btn-outline-danger btn-sm"
+              :disabled="isLoading"
+              @click="removeProduct(item.id)"
             >
-              <i class="fas fa-spinner fa-pulse" />
+              <i
+                v-if="isLoading"
+                class="fas fa-spinner fa-pulse"
+              />
               x
             </button>
           </td>
@@ -41,6 +46,7 @@
                   min="1"
                   type="number"
                   class="form-control"
+                  :disabled="isLoading"
                 >
                 <span
                   id="basic-addon2"
@@ -91,8 +97,12 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    propIsLoading: {
+      type: Boolean,
+      default: false,
+    },
   },
-  emits: ['get-cart'],
+  emits: ['get-cart', 'remove-product'],
   data() {
     return {
       cartData: {
@@ -100,13 +110,21 @@ export default {
         total: 0,
         final_total: 0,
       },
+      isLoading: false,
     };
   },
   watch: {
     propCartData() {
       this.cartData = this.propCartData;
     },
+    propIsLoading() {
+      this.isLoading = this.propIsLoading;
+    },
   },
-  methods: {},
+  methods: {
+    removeProduct(productId) {
+      this.$emit('remove-product', productId);
+    },
+  },
 };
 </script>

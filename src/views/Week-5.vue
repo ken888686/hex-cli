@@ -78,7 +78,7 @@
           class="btn btn-outline-danger"
           type="button"
           :disabled="isLoading || !cartData.carts.length"
-          @click="clear"
+          @click="removeProduct('')"
         >
           <i
             v-if="isLoading && loadingItemId === ''"
@@ -89,7 +89,9 @@
       </div>
       <CartList
         :prop-cart-data="cartData"
+        :prop-is-loading="isLoading"
         @get-cart="getCart"
+        @remove-product="removeProduct"
       />
     </div>
 
@@ -158,7 +160,7 @@ export default {
           this.isLoading = false;
         });
     },
-    clear() {
+    removeProduct(productId = '') {
       if (this.cartData.carts.length <= 0) {
         return;
       }
@@ -166,7 +168,7 @@ export default {
       this.isLoading = true;
 
       customer
-        .removeCart()
+        .removeCart(productId)
         .then((res) => {
           const { success, message } = res.data;
           this.success = success;
@@ -197,6 +199,7 @@ export default {
     addProduct({ productId, quantity = 1 }) {
       this.loadingItemId = productId;
       this.isLoading = true;
+
       customer
         .addProduct(this.loadingItemId, quantity)
         .then((res) => {
@@ -217,6 +220,7 @@ export default {
     },
     getCart() {
       const loader = this.$loading.show();
+
       customer
         .getCart()
         .then((res) => {
