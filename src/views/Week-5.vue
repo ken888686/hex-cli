@@ -66,10 +66,12 @@
           </tr>
         </tbody>
       </table>
-      <Pagination
-        :prop-pagination="pagination"
-        @set-current-page="getProducts"
-      />
+      <div class="text-center">
+        <Pagination
+          :prop-pagination="pagination"
+          @set-current-page="getProducts"
+        />
+      </div>
       <div class="d-flex justify-content-end">
         <button
           class="btn btn-outline-danger"
