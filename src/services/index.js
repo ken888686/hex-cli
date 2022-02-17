@@ -204,6 +204,33 @@ const customer = {
     });
   },
   /**
+   * 加入購物車
+   * @param {String} productId 產品id
+   * @param {Number} quantity 數量
+   * @returns Promise
+   */
+  addProduct(productId, quantity = 1) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post(
+          `${url}/v2/api/${apiPath}/cart`,
+          {
+            data: {
+              product_id: productId,
+              qty: quantity,
+            },
+          },
+          config,
+        )
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  },
+  /**
    * 取得購物車
    * @returns Promise
    */
