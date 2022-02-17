@@ -54,6 +54,7 @@
                   type="button"
                   class="btn btn-outline-danger"
                   :disabled="isLoading && loadingItemId === item.id"
+                  @click="addProduct({ productId: item.id, quantity: 1 })"
                 >
                   <i
                     v-if="isLoading && loadingItemId === item.id"
@@ -66,101 +67,30 @@
           </tr>
         </tbody>
       </table>
-      <Pagination
-        :prop-pagination="pagination"
-        @set-current-page="getProducts"
-      />
+      <div class="text-center">
+        <Pagination
+          :prop-pagination="pagination"
+          @set-current-page="getProducts"
+        />
+      </div>
       <div class="d-flex justify-content-end">
         <button
           class="btn btn-outline-danger"
           type="button"
+          :disabled="isLoading || !cartData.carts.length"
           @click="clear"
         >
+          <i
+            v-if="isLoading && loadingItemId === ''"
+            class="fas fa-spinner fa-pulse"
+          />
           清空購物車
         </button>
       </div>
-      <table class="table align-middle">
-        <thead>
-          <tr>
-            <th />
-            <th>品名</th>
-            <th style="width: 150px">
-              數量/單位
-            </th>
-            <th>單價</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-if="cartData.carts">
-            <tr
-              v-for="(item, index) in cartData.carts"
-              :key="index"
-            >
-              <td>
-                <button
-                  type="button"
-                  class="btn btn-outline-danger btn-sm"
-                >
-                  <i class="fas fa-spinner fa-pulse" />
-                  x
-                </button>
-              </td>
-              <td>
-                {{ item.product.title }}
-                <div class="text-success">
-                  已套用優惠券
-                </div>
-              </td>
-              <td>
-                <div class="input-group input-group-sm">
-                  <div class="input-group mb-3">
-                    <input
-                      v-model="item.qty"
-                      min="1"
-                      type="number"
-                      class="form-control"
-                    >
-                    <span
-                      id="basic-addon2"
-                      class="input-group-text"
-                    >
-                      {{ item.product.unit }}
-                    </span>
-                  </div>
-                </div>
-              </td>
-              <td class="text-end">
-                <small class="text-success">折扣價：</small>
-                {{ item.product.price }}
-              </td>
-            </tr>
-          </template>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td
-              colspan="3"
-              class="text-end"
-            >
-              總計
-            </td>
-            <td class="text-end">
-              {{ cartData.total }}
-            </td>
-          </tr>
-          <tr>
-            <td
-              colspan="3"
-              class="text-end text-success"
-            >
-              折扣價
-            </td>
-            <td class="text-end text-success">
-              {{ cartData.final_total }}
-            </td>
-          </tr>
-        </tfoot>
-      </table>
+      <CartList
+        :prop-cart-data="cartData"
+        @get-cart="getCart"
+      />
     </div>
 
     <ProductInfoModal
@@ -174,11 +104,13 @@ import { Modal } from 'bootstrap';
 import { customer } from '@/services';
 import Pagination from '@/components/Pagination.vue';
 import ProductInfoModal from '@/components/ProductInfoModal.vue';
+import CartList from '@/components/CartList.vue';
 
 export default {
   components: {
     Pagination,
     ProductInfoModal,
+    CartList,
   },
   data() {
     return {
@@ -215,12 +147,15 @@ export default {
         })
         .catch((err) => {
           this.errAction(err.response.data);
-        })
-        .finally(() => {
-          this.isLoading = false;
         });
     },
     clear() {
+      if (this.cartData.carts.length <= 0) {
+        return;
+      }
+      this.loadingItemId = '';
+      this.isLoading = true;
+
       customer
         .removeCart()
         .then((res) => {
@@ -246,7 +181,23 @@ export default {
           this.errAction(err.response.data);
         })
         .finally(() => {
+          this.isLoading = false;
           loader.hide();
+        });
+    },
+    addProduct({ productId, quantity = 1 }) {
+      this.loadingItemId = productId;
+      this.isLoading = true;
+      customer
+        .addProduct(this.loadingItemId, quantity)
+        .then((res) => {
+          const { message, success } = res.data;
+          this.message = message;
+          this.success = success;
+          this.getCart();
+        })
+        .catch((err) => {
+          this.errAction(err.response.data);
         });
     },
     getCart() {
@@ -261,6 +212,7 @@ export default {
           this.errAction(err.response.data);
         })
         .finally(() => {
+          this.isLoading = false;
           loader.hide();
         });
     },
