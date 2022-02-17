@@ -16,6 +16,11 @@ const routes = [
     name: 'Week 4',
     component: () => import('../views/Week-4.vue'),
   },
+  {
+    path: '/week-5',
+    name: 'Week 5',
+    component: () => import('../views/Week-5.vue'),
+  },
 ];
 
 const router = createRouter({

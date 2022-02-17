@@ -43,12 +43,15 @@
               class="dropdown-menu"
               aria-labelledby="navbarDropdown"
             >
-              <li>
+              <li
+                v-for="(item, index) in homework"
+                :key="index"
+              >
                 <router-link
                   class="dropdown-item"
-                  to="/week-4"
+                  :to="`/week-${item}`"
                 >
-                  Week 4
+                  Week {{ item }}
                 </router-link>
               </li>
             </ul>
@@ -128,6 +131,7 @@ export default {
       isProcessing: false,
       message: '',
       logoutModal: null,
+      homework: [4, 5],
     };
   },
   computed: {
