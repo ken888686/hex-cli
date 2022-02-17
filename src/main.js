@@ -6,7 +6,7 @@ import router from '@/router';
 import '@/assets/scss/all.scss';
 import 'bootstrap';
 import 'vue-loading-overlay/dist/vue-loading.css';
-
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import VueCookies from 'vue3-cookies';
 
 createApp(App)
