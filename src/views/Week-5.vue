@@ -41,15 +41,24 @@
                 <button
                   type="button"
                   class="btn btn-outline-secondary"
+                  :disabled="isLoading && loadingItemId === item.id"
+                  @click="showProductInfoModal(item.id)"
                 >
-                  <i class="fas fa-spinner fa-pulse" />
+                  <i
+                    v-if="isLoading && loadingItemId === item.id"
+                    class="fas fa-spinner fa-pulse"
+                  />
                   查看更多
                 </button>
                 <button
                   type="button"
                   class="btn btn-outline-danger"
+                  :disabled="isLoading && loadingItemId === item.id"
                 >
-                  <i class="fas fa-spinner fa-pulse" />
+                  <i
+                    v-if="isLoading && loadingItemId === item.id"
+                    class="fas fa-spinner fa-pulse"
+                  />
                   加到購物車
                 </button>
               </div>
@@ -153,19 +162,28 @@
         </tfoot>
       </table>
     </div>
+
+    <ProductInfoModal
+      ref="productInfoModal"
+      :prop-product="product"
+    />
   </div>
 </template>
 <script>
+import { Modal } from 'bootstrap';
 import { customer } from '@/services';
 import Pagination from '@/components/Pagination.vue';
+import ProductInfoModal from '@/components/ProductInfoModal.vue';
 
 export default {
   components: {
     Pagination,
+    ProductInfoModal,
   },
   data() {
     return {
       pagination: {},
+      product: {},
       products: [],
       success: false,
       message: '',
@@ -174,25 +192,34 @@ export default {
         final_total: 0,
         total: 0,
       },
+      productInfoModal: null,
+      isLoading: false,
+      loadingItemId: '',
     };
   },
   mounted() {
     this.getProducts();
     this.getCart();
+    this.productInfoModal = new Modal(this.$refs.productInfoModal.$refs.modal);
   },
   methods: {
-    // submit() {
-    //   const loader = this.$loading.show({
-    //     canCancel: true,
-    //     onCancel: this.onCancel,
-    //   });
-    //   setTimeout(() => {
-    //     loader.hide();
-    //   }, 1000);
-    // },
-    // onCancel() {
-    //   console.log('User cancelled the loader.');
-    // },
+    showProductInfoModal(productId) {
+      this.loadingItemId = productId;
+      this.isLoading = true;
+
+      customer
+        .getProduct(productId)
+        .then((res) => {
+          this.product = res.data.product;
+          this.productInfoModal.show();
+        })
+        .catch((err) => {
+          this.errAction(err.response.data);
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
+    },
     clear() {
       customer
         .removeCart()
@@ -203,11 +230,7 @@ export default {
           this.getCart();
         })
         .catch((err) => {
-          const { message, success } = err.response.data;
-          this.message = message;
-          this.success = success;
-          this.$store.commit('logout');
-          this.$router.push('/login');
+          this.errAction(err.response.data);
         });
     },
     getProducts(page = 1) {
@@ -220,11 +243,7 @@ export default {
           this.products = products;
         })
         .catch((err) => {
-          const { message, success } = err.response.data;
-          this.message = message;
-          this.success = success;
-          this.$store.commit('logout');
-          this.$router.push('/login');
+          this.errAction(err.response.data);
         })
         .finally(() => {
           loader.hide();
@@ -239,15 +258,18 @@ export default {
           this.cartData = data;
         })
         .catch((err) => {
-          const { message, success } = err.response.data;
-          this.message = message;
-          this.success = success;
-          this.$store.commit('logout');
-          this.$router.push('/login');
+          this.errAction(err.response.data);
         })
         .finally(() => {
           loader.hide();
         });
+    },
+    errAction(errData) {
+      const { message, success } = errData;
+      this.message = message;
+      this.success = success;
+      this.$store.commit('logout');
+      this.$router.push('/login');
     },
   },
 };

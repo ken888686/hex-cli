@@ -167,7 +167,7 @@ const admin = {
  */
 const customer = {
   /**
-   * 取得產品
+   * 取得產品列表
    * @param {Number} page 頁數
    * @param {String} category 分類
    * @returns Promise
@@ -178,6 +178,23 @@ const customer = {
         .get(
           `${url}/v2/api/${apiPath}/products?page=${page}&category=${category}`,
         )
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  },
+  /**
+   * 取得產品資訊
+   * @param {String} id 產品id
+   * @returns Promise
+   */
+  getProduct(id) {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`${url}/v2/api/${apiPath}/product/${id}`)
         .then((res) => {
           resolve(res);
         })
