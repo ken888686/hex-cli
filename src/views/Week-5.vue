@@ -96,6 +96,7 @@
     <ProductInfoModal
       ref="productInfoModal"
       :prop-product="product"
+      @add-product="addProduct"
     />
   </div>
 </template>
@@ -126,18 +127,23 @@ export default {
       },
       productInfoModal: null,
       isLoading: false,
+      isProductInfoModalShow: false,
       loadingItemId: '',
     };
   },
   mounted() {
     this.getProducts();
     this.getCart();
-    this.productInfoModal = new Modal(this.$refs.productInfoModal.$refs.modal);
+    this.productInfoModal = new Modal(this.$refs.productInfoModal.$refs.modal, {
+      keyboard: false,
+      backdrop: 'static',
+    });
   },
   methods: {
     showProductInfoModal(productId) {
       this.loadingItemId = productId;
       this.isLoading = true;
+      this.isProductInfoModalShow = true;
 
       customer
         .getProduct(productId)
@@ -147,6 +153,9 @@ export default {
         })
         .catch((err) => {
           this.errAction(err.response.data);
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
     clear() {
@@ -198,6 +207,12 @@ export default {
         })
         .catch((err) => {
           this.errAction(err.response.data);
+        })
+        .finally(() => {
+          if (this.isProductInfoModalShow) {
+            this.productInfoModal.hide();
+            this.isProductInfoModalShow = false;
+          }
         });
     },
     getCart() {
