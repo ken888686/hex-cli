@@ -231,6 +231,33 @@ const customer = {
     });
   },
   /**
+   * 更新購物車資訊
+   * @param {String} productId 產品id
+   * @param {Number} quantity 數量
+   * @returns Promise
+   */
+  updateProduct(productId, quantity) {
+    return new Promise((resolve, reject) => {
+      axios
+        .put(
+          `${url}/v2/api/${apiPath}/cart/${productId}`,
+          {
+            data: {
+              product_id: productId,
+              qty: quantity,
+            },
+          },
+          config,
+        )
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  },
+  /**
    * 取得購物車
    * @returns Promise
    */

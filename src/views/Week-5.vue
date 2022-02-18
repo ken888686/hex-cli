@@ -67,7 +67,10 @@
           </tr>
         </tbody>
       </table>
-      <div class="text-center">
+      <div
+        class="text-center"
+        :class="{ 'd-none': pagination.total_pages < 1 }"
+      >
         <Pagination
           :prop-pagination="pagination"
           @set-current-page="getProducts"
@@ -91,6 +94,7 @@
         :prop-cart-data="cartData"
         :prop-is-loading="isLoading"
         @get-cart="getCart"
+        @update-product="updateProduct"
         @remove-product="removeProduct"
       />
     </div>
@@ -233,6 +237,24 @@ export default {
         .finally(() => {
           this.isLoading = false;
           loader.hide();
+        });
+    },
+    updateProduct({ productId, quantity }) {
+      this.isLoading = true;
+
+      customer
+        .updateProduct(productId, quantity)
+        .then((res) => {
+          const { success, message } = res.data;
+          this.message = message;
+          this.success = success;
+          this.getCart();
+        })
+        .catch((err) => {
+          this.errAction(err.response.data);
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
     errAction(errData) {
