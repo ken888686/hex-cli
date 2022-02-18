@@ -34,7 +34,10 @@
           </td>
           <td>
             {{ item.product.title }}
-            <div class="text-success">
+            <div
+              v-if="item.coupon"
+              class="text-success"
+            >
               已套用優惠券
             </div>
           </td>
@@ -42,11 +45,12 @@
             <div class="input-group input-group-sm">
               <div class="input-group mb-3">
                 <input
-                  v-model="item.qty"
+                  v-model.number="item.qty"
                   min="1"
                   type="number"
                   class="form-control"
                   :disabled="isLoading"
+                  @change="updateProductDebounced(item.id, item.qty)"
                 >
                 <span
                   id="basic-addon2"
@@ -91,6 +95,8 @@
   </table>
 </template>
 <script>
+import _ from 'lodash';
+
 export default {
   props: {
     propCartData: {
@@ -102,7 +108,7 @@ export default {
       default: false,
     },
   },
-  emits: ['get-cart', 'remove-product'],
+  emits: ['get-cart', 'update-product', 'remove-product'],
   data() {
     return {
       cartData: {
@@ -111,6 +117,7 @@ export default {
         final_total: 0,
       },
       isLoading: false,
+      product: {},
     };
   },
   watch: {
@@ -125,6 +132,12 @@ export default {
     removeProduct(productId) {
       this.$emit('remove-product', productId);
     },
+    updateProduct(productId, quantity) {
+      this.$emit('update-product', { productId, quantity });
+    },
+    updateProductDebounced: _.debounce(function (productId, quantity) {
+      this.updateProduct(productId, quantity);
+    }, 1000),
   },
 };
 </script>
