@@ -104,6 +104,7 @@
       :prop-product="product"
       @add-product="addProduct"
     />
+    <OrderInfo @get-cart="getCart" />
   </div>
 </template>
 <script>
@@ -112,12 +113,14 @@ import { customer } from '@/services';
 import Pagination from '@/components/Pagination.vue';
 import ProductInfoModal from '@/components/ProductInfoModal.vue';
 import CartList from '@/components/CartList.vue';
+import OrderInfo from '@/components/OrderInfo.vue';
 
 export default {
   components: {
     Pagination,
     ProductInfoModal,
     CartList,
+    OrderInfo,
   },
   data() {
     return {

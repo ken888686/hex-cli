@@ -264,7 +264,7 @@ const customer = {
   getCart() {
     return new Promise((resolve, reject) => {
       axios
-        .get(`${url}/v2/api/${apiPath}/cart`)
+        .get(`${url}/v2/api/${apiPath}/cart`, {}, config)
         .then((res) => {
           resolve(res);
         })
@@ -285,7 +285,19 @@ const customer = {
 
     return new Promise((resolve, reject) => {
       axios
-        .delete(reqUrl)
+        .delete(reqUrl, {}, config)
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  },
+  submitOrder(data) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post(`${url}/v2/api/${apiPath}/order`, { data }, config)
         .then((res) => {
           resolve(res);
         })
