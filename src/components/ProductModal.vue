@@ -280,7 +280,7 @@ export default {
       this.isNew = this.propIsNew;
     },
     propProduct() {
-      this.product = this.propProduct;
+      this.product = JSON.parse(JSON.stringify(this.propProduct));
     },
     'product.imageUrl': {
       handler() {},
