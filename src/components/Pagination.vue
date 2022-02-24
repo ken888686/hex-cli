@@ -11,7 +11,7 @@
         <a
           class="page-link"
           href="#"
-          @click="setCurrentPage(pagination.current_page - 1)"
+          @click.prevent="setCurrentPage(pagination.current_page - 1)"
         >
           Previous
         </a>
@@ -26,7 +26,7 @@
         <a
           class="page-link"
           href="#"
-          @click="setCurrentPage(page)"
+          @click.prevent="setCurrentPage(page)"
         >
           {{ page }}
         </a>
@@ -38,7 +38,7 @@
         <a
           class="page-link"
           href="#"
-          @click="setCurrentPage(pagination.current_page + 1)"
+          @click.prevent="setCurrentPage(pagination.current_page + 1)"
         >
           Next
         </a>
