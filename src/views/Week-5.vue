@@ -104,7 +104,10 @@
       :prop-product="product"
       @add-product="addProduct"
     />
-    <OrderInfo @get-cart="getCart" />
+    <OrderInfo
+      :prop-disabled="cartData.carts.length === 0"
+      @get-cart="getCart"
+    />
     <NotificationModal
       ref="modal"
       :prop-success="success"
