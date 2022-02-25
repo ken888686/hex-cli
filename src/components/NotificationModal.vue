@@ -45,6 +45,10 @@ import { Modal } from 'bootstrap';
 
 export default {
   props: {
+    propSuccess: {
+      type: Boolean,
+      default: true,
+    },
     propTitle: {
       type: String,
       default: '',
@@ -56,12 +60,16 @@ export default {
   },
   data() {
     return {
+      success: true,
       title: '',
       message: '',
       modal: null,
     };
   },
   watch: {
+    propSuccess(newValue) {
+      this.success = newValue;
+    },
     propTitle(val) {
       this.title = val;
     },
@@ -74,8 +82,8 @@ export default {
   },
   methods: {
     show() {
-      this.title = this.propTitle;
-      this.message = this.propMessage;
+      // this.title = this.propTitle;
+      // this.message = this.propMessage;
       this.modal.show();
     },
   },
