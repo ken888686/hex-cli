@@ -114,6 +114,7 @@
         <button
           type="submit"
           class="btn btn-danger"
+          :disabled="disabled || Object.keys(errors).length > 0"
         >
           送出訂單
         </button>
@@ -156,7 +157,12 @@ export default {
     ErrorMessage,
     NotificationModal,
   },
-  props: {},
+  props: {
+    propDisabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
   emits: ['get-cart'],
   data() {
     return {
@@ -170,9 +176,17 @@ export default {
       isLoading: false,
       message: '',
       success: false,
+      disabled: false,
     };
   },
-  watch: {},
+  watch: {
+    propDisabled(newValue) {
+      this.disabled = newValue;
+    },
+  },
+  mounted() {
+    this.disabled = this.propDisabled;
+  },
   methods: {
     isPhone(value) {
       // cell: (^09|\+?8869)\d{2}(-?\d{3}-?\d{3})$
@@ -181,6 +195,10 @@ export default {
       return phoneNum.test(value) ? true : '需要正確的手機號碼';
     },
     onSubmit() {
+      if (this.disabled || Object.keys(this.errors).length > 0) {
+        return;
+      }
+
       this.isLoading = true;
       const data = {
         user: {
@@ -198,13 +216,7 @@ export default {
           this.message = message;
           this.success = success;
           this.$emit('get-cart');
-          this.user = {
-            email: '',
-            name: '',
-            tel: '',
-            address: '',
-          };
-          this.memo = '';
+          this.$refs.form.resetForm();
         })
         .catch((err) => {
           const { message, success } = err.response.data;
