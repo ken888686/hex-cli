@@ -91,8 +91,10 @@ export default {
           const { message, success } = err.response.data;
           this.message = message;
           this.success = success;
-          this.$store.commit('logout');
-          this.$router.push('/login');
+          this.$emit('show-result-modal', {
+            message,
+            success,
+          });
         });
     },
   },

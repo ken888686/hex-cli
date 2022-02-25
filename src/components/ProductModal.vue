@@ -57,14 +57,14 @@
                   <hr>
                   <div class="mb-3">
                     <label
-                      for="imageUrl"
+                      for="imagesUrl"
                       class="form-label"
                     >
                       輸入其他圖片網址
                     </label>
                     <div
                       v-for="(img, index) in product.imagesUrl"
-                      id="imageUrl"
+                      id="imagesUrl"
                       :key="'pic-' + index"
                       class="mb-3"
                     >
@@ -280,7 +280,7 @@ export default {
       this.isNew = this.propIsNew;
     },
     propProduct() {
-      this.product = this.propProduct;
+      this.product = JSON.parse(JSON.stringify(this.propProduct));
     },
     'product.imageUrl': {
       handler() {},
@@ -296,18 +296,14 @@ export default {
           const { message, success } = res.data;
           this.message = message;
           this.success = success;
-          this.$emit('show-result-modal', {
-            message,
-            success,
-          });
+          this.$emit('show-result-modal', { message, success });
           this.$emit('get-products');
         })
         .catch((err) => {
           const { message, success } = err.response.data;
           this.message = message;
           this.success = success;
-          this.$store.commit('logout');
-          this.$router.push('/login');
+          this.$emit('show-result-modal', { message, success });
         });
     },
     updateProduct() {
@@ -317,18 +313,14 @@ export default {
           const { message, success } = res.data;
           this.message = message;
           this.success = success;
-          this.$emit('show-result-modal', {
-            message,
-            success,
-          });
+          this.$emit('show-result-modal', { message, success });
           this.$emit('get-products');
         })
         .catch((err) => {
           const { message, success } = err.response.data;
           this.message = message;
           this.success = success;
-          this.$store.commit('logout');
-          this.$router.push('/login');
+          this.$emit('show-result-modal', { message, success });
         });
     },
   },

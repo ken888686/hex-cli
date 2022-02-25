@@ -105,6 +105,12 @@
       @add-product="addProduct"
     />
     <OrderInfo @get-cart="getCart" />
+    <NotificationModal
+      ref="modal"
+      :prop-success="success"
+      prop-title="結果"
+      :prop-message="message"
+    />
   </div>
 </template>
 <script>
@@ -114,6 +120,7 @@ import Pagination from '@/components/Pagination.vue';
 import ProductInfoModal from '@/components/ProductInfoModal.vue';
 import CartList from '@/components/CartList.vue';
 import OrderInfo from '@/components/OrderInfo.vue';
+import NotificationModal from '@/components/NotificationModal.vue';
 
 export default {
   components: {
@@ -121,6 +128,7 @@ export default {
     ProductInfoModal,
     CartList,
     OrderInfo,
+    NotificationModal,
   },
   data() {
     return {
@@ -138,6 +146,7 @@ export default {
       isLoading: false,
       isProductInfoModalShow: false,
       loadingItemId: '',
+      resultModal: null,
     };
   },
   mounted() {
@@ -147,6 +156,7 @@ export default {
       keyboard: false,
       backdrop: 'static',
     });
+    this.resultModal = new Modal(this.$refs.modal.$el);
   },
   methods: {
     showProductInfoModal(productId) {
@@ -264,8 +274,7 @@ export default {
       const { message, success } = errData;
       this.message = message;
       this.success = success;
-      this.$store.commit('logout');
-      this.$router.push('/login');
+      this.resultModal.show();
     },
   },
 };

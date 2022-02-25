@@ -188,6 +188,7 @@ export default {
     },
     showProductResultModal({ message, success }) {
       this.result = { message, success };
+      console.log(this.result);
       this.productResultModal.show();
     },
     getProducts(page = 1) {
@@ -204,8 +205,7 @@ export default {
           const { message, success } = err.response.data;
           this.message = message;
           this.success = success;
-          this.$store.commit('logout');
-          this.$router.push('/login');
+          this.showProductResultModal({ message, success });
         });
     },
   },
